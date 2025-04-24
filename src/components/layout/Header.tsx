@@ -2,7 +2,7 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { Users, Trophy, BarChart3 } from "lucide-react";
+import { Users, Search } from "lucide-react";
 
 const Header = () => {
   return (
@@ -24,11 +24,11 @@ const Header = () => {
           <Link to="/practice" className="text-gray-700 hover:text-interviewer-blue transition-colors">
             Practice
           </Link>
-          <Link to="/progress" className="text-gray-700 hover:text-interviewer-blue transition-colors">
-            Progress
-          </Link>
           <Link to="/question-bank" className="text-gray-700 hover:text-interviewer-blue transition-colors">
             Question Bank
+          </Link>
+          <Link to="/progress" className="text-gray-700 hover:text-interviewer-blue transition-colors">
+            Progress
           </Link>
         </div>
         
