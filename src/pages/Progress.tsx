@@ -30,8 +30,8 @@ const ProgressPage = () => {
             <Activity className="h-4 w-4 text-interviewer-purple" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">12</div>
-            <p className="text-xs text-gray-500">+2 from last week</p>
+            <div className="text-2xl font-bold">0</div>
+            <p className="text-xs text-gray-500">+0 from last week</p>
           </CardContent>
         </Card>
 
@@ -41,8 +41,8 @@ const ProgressPage = () => {
             <TrendingUp className="h-4 w-4 text-interviewer-green" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">78%</div>
-            <p className="text-xs text-gray-500">+5% improvement</p>
+            <div className="text-2xl font-bold">0%</div>
+            <p className="text-xs text-gray-500">+0% improvement</p>
           </CardContent>
         </Card>
 
@@ -52,7 +52,7 @@ const ProgressPage = () => {
             <PieChart className="h-4 w-4 text-interviewer-purple" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">48</div>
+            <div className="text-2xl font-bold">0</div>
             <p className="text-xs text-gray-500">This month</p>
           </CardContent>
         </Card>
@@ -63,7 +63,7 @@ const ProgressPage = () => {
             <BarChart className="h-4 w-4 text-interviewer-green" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">6</div>
+            <div className="text-2xl font-bold">0</div>
             <p className="text-xs text-gray-500">Different topics</p>
           </CardContent>
         </Card>
@@ -85,23 +85,23 @@ const ProgressPage = () => {
               <div className="space-y-2">
                 <div className="flex justify-between text-sm">
                   <span>Problem Solving</span>
-                  <span>85%</span>
+                  <span>0%</span>
                 </div>
-                <Progress value={85} />
+                <Progress value={0} />
               </div>
               <div className="space-y-2">
                 <div className="flex justify-between text-sm">
                   <span>System Design</span>
-                  <span>70%</span>
+                  <span>0%</span>
                 </div>
-                <Progress value={70} />
+                <Progress value={0} />
               </div>
               <div className="space-y-2">
                 <div className="flex justify-between text-sm">
                   <span>Data Structures</span>
-                  <span>75%</span>
+                  <span>0%</span>
                 </div>
-                <Progress value={75} />
+                <Progress value={0} />
               </div>
             </CardContent>
           </Card>
@@ -114,23 +114,23 @@ const ProgressPage = () => {
               <div className="space-y-2">
                 <div className="flex justify-between text-sm">
                   <span>Communication</span>
-                  <span>90%</span>
+                  <span>0%</span>
                 </div>
-                <Progress value={90} />
+                <Progress value={0} />
               </div>
               <div className="space-y-2">
                 <div className="flex justify-between text-sm">
                   <span>Problem Analysis</span>
-                  <span>85%</span>
+                  <span>0%</span>
                 </div>
-                <Progress value={85} />
+                <Progress value={0} />
               </div>
               <div className="space-y-2">
                 <div className="flex justify-between text-sm">
                   <span>Time Management</span>
-                  <span>80%</span>
+                  <span>0%</span>
                 </div>
-                <Progress value={80} />
+                <Progress value={0} />
               </div>
             </CardContent>
           </Card>
@@ -145,24 +145,10 @@ const ProgressPage = () => {
               <div className="space-y-4">
                 <div className="flex items-center justify-between p-2 bg-gray-50 rounded-lg">
                   <div>
-                    <p className="font-medium">Technical Interview</p>
-                    <p className="text-sm text-gray-500">85% success rate</p>
+                    <p className="font-medium">No sessions yet</p>
+                    <p className="text-sm text-gray-500">Start practicing to see your history</p>
                   </div>
-                  <p className="text-sm text-gray-500">Today</p>
-                </div>
-                <div className="flex items-center justify-between p-2 bg-gray-50 rounded-lg">
-                  <div>
-                    <p className="font-medium">Behavioral Questions</p>
-                    <p className="text-sm text-gray-500">90% success rate</p>
-                  </div>
-                  <p className="text-sm text-gray-500">Yesterday</p>
-                </div>
-                <div className="flex items-center justify-between p-2 bg-gray-50 rounded-lg">
-                  <div>
-                    <p className="font-medium">System Design</p>
-                    <p className="text-sm text-gray-500">75% success rate</p>
-                  </div>
-                  <p className="text-sm text-gray-500">3 days ago</p>
+                  <p className="text-sm text-gray-500">-</p>
                 </div>
               </div>
             </CardContent>
