@@ -2,9 +2,12 @@
 import React from "react";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { Users, Search } from "lucide-react";
+import { Users } from "lucide-react";
+import { SignInButton, SignUpButton, UserButton, useAuth } from "@clerk/clerk-react";
 
 const Header = () => {
+  const { isSignedIn } = useAuth();
+
   return (
     <header className="border-b bg-white shadow-sm">
       <div className="container flex items-center justify-between py-4">
@@ -33,12 +36,22 @@ const Header = () => {
         </div>
         
         <div className="flex items-center gap-4">
-          <Button variant="outline" className="hidden sm:flex">
-            Sign In
-          </Button>
-          <Button className="bg-interviewer-blue hover:bg-interviewer-blue-light">
-            Get Started
-          </Button>
+          {!isSignedIn ? (
+            <>
+              <SignInButton>
+                <Button variant="outline" className="hidden sm:flex">
+                  Sign In
+                </Button>
+              </SignInButton>
+              <SignUpButton>
+                <Button className="bg-interviewer-blue hover:bg-interviewer-blue-light">
+                  Get Started
+                </Button>
+              </SignUpButton>
+            </>
+          ) : (
+            <UserButton afterSignOutUrl="/" />
+          )}
         </div>
       </div>
     </header>
