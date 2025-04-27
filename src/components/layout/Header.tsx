@@ -1,12 +1,13 @@
 
 import React from "react";
 import { Button } from "@/components/ui/button";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Users } from "lucide-react";
-import { SignInButton, SignUpButton, UserButton, useAuth } from "@clerk/clerk-react";
+import { UserButton, useAuth } from "@clerk/clerk-react";
 
 const Header = () => {
   const { isSignedIn } = useAuth();
+  const navigate = useNavigate();
 
   return (
     <header className="border-b bg-white shadow-sm">
@@ -38,16 +39,19 @@ const Header = () => {
         <div className="flex items-center gap-4">
           {!isSignedIn ? (
             <>
-              <SignInButton>
-                <Button variant="outline" className="hidden sm:flex">
-                  Sign In
-                </Button>
-              </SignInButton>
-              <SignUpButton>
-                <Button className="bg-interviewer-blue hover:bg-interviewer-blue-light">
-                  Get Started
-                </Button>
-              </SignUpButton>
+              <Button 
+                variant="outline" 
+                className="hidden sm:flex"
+                onClick={() => navigate('/sign-in')}
+              >
+                Sign In
+              </Button>
+              <Button 
+                className="bg-interviewer-blue hover:bg-interviewer-blue-light"
+                onClick={() => navigate('/get-started')}
+              >
+                Get Started
+              </Button>
             </>
           ) : (
             <UserButton afterSignOutUrl="/" />

@@ -6,6 +6,8 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ProtectedRoute } from "./components/auth/ProtectedRoute";
 import Index from "./pages/Index";
+import SignIn from "./pages/SignIn";
+import GetStarted from "./pages/GetStarted";
 import Practice from "./pages/Practice";
 import QuestionBank from "./pages/QuestionBank";
 import Progress from "./pages/Progress";
@@ -22,6 +24,8 @@ const App = () => (
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Index />} />
+          <Route path="/sign-in" element={<SignIn />} />
+          <Route path="/get-started" element={<GetStarted />} />
           <Route 
             path="/dashboard" 
             element={
