@@ -2,6 +2,7 @@
 import { SignIn } from "@clerk/clerk-react";
 import { Card } from "@/components/ui/card";
 import { Users } from "lucide-react";
+import { Link } from "react-router-dom";
 
 const SignInPage = () => {
   return (
@@ -36,6 +37,17 @@ const SignInPage = () => {
               }
             }}
           />
+          <div className="mt-6 text-center">
+            <p className="text-sm text-gray-600">
+              Don't have an account?{" "}
+              <Link
+                to="/get-started"
+                className="font-medium text-interviewer-blue hover:text-interviewer-blue-light"
+              >
+                Sign up for free
+              </Link>
+            </p>
+          </div>
         </Card>
       </div>
     </div>
