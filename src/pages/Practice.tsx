@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
 import { Card, CardContent } from "@/components/ui/card";
@@ -34,7 +34,15 @@ const Practice = () => {
   const { toast } = useToast();
   const { user } = useAuth();
   
+  useEffect(() => {
+    console.log("Current active tab:", activeTab);
+    console.log("Questions state:", questions.length > 0 ? `${questions.length} questions loaded` : "No questions loaded");
+    console.log("Session ID:", sessionId);
+  }, [activeTab, questions, sessionId]);
+  
   const handleFormSubmit = async (values: FormData) => {
+    console.log("Form submitted with values:", values);
+    
     if (!user) {
       toast({
         title: "Authentication required",
@@ -46,8 +54,10 @@ const Practice = () => {
     
     setFormData(values);
     setIsLoading(true);
+    console.log("Setting loading to true, starting interview setup");
     
     try {
+      console.log("Creating interview session in database");
       // Create a new interview session in the database
       const { data: sessionData, error: sessionError } = await supabase
         .from('interview_sessions')
@@ -61,17 +71,25 @@ const Practice = () => {
         .single();
         
       if (sessionError) {
+        console.error("Session creation error:", sessionError);
         throw sessionError;
       }
+      
+      console.log("Session created:", sessionData);
       
       // Store the session ID for later use
       if (sessionData) {
         setSessionId(sessionData.id);
+        console.log("Session ID set to:", sessionData.id);
       }
       
       // Generate interview questions
+      console.log("Generating interview questions");
       const generatedQuestions = await generateInterviewQuestions(values);
+      console.log("Questions generated:", generatedQuestions);
       setQuestions(generatedQuestions);
+      
+      console.log("Changing tab to practice");
       setActiveTab("practice");
     } catch (error) {
       console.error("Error setting up interview:", error);
@@ -81,15 +99,18 @@ const Practice = () => {
         variant: "destructive",
       });
     } finally {
+      console.log("Setting loading to false");
       setIsLoading(false);
     }
   };
   
   const handleFinishInterview = () => {
+    console.log("Interview finished, changing to results tab");
     setActiveTab("results");
   };
   
   const handleRestartPractice = () => {
+    console.log("Restarting practice");
     setActiveTab("setup");
     setQuestions([]);
     setFormData(null);
@@ -125,12 +146,17 @@ const Practice = () => {
                     </TabsContent>
                     
                     <TabsContent value="practice">
-                      {questions.length > 0 && (
+                      <p>Current questions count: {questions.length}</p>
+                      {questions.length > 0 ? (
                         <InterviewSession
                           questions={questions}
                           onFinish={handleFinishInterview}
                           sessionId={sessionId || undefined}
                         />
+                      ) : (
+                        <div className="text-center py-8">
+                          <p className="text-gray-600">No questions available. Please set up your interview first.</p>
+                        </div>
                       )}
                     </TabsContent>
                     

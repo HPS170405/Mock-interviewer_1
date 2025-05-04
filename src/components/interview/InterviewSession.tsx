@@ -21,6 +21,9 @@ interface InterviewSessionProps {
 }
 
 const InterviewSession: React.FC<InterviewSessionProps> = ({ questions, onFinish, sessionId }) => {
+  console.log("InterviewSession component rendering with questions:", questions);
+  console.log("Session ID:", sessionId);
+
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [timer, setTimer] = useState(30);
@@ -36,6 +39,7 @@ const InterviewSession: React.FC<InterviewSessionProps> = ({ questions, onFinish
   const isLastQuestion = currentQuestionIndex === totalQuestions - 1;
 
   useEffect(() => {
+    console.log("Current question:", currentQuestion);
     // Reset timer and state when question changes
     setTimer(30);
     setIsTimerActive(true);
@@ -57,9 +61,12 @@ const InterviewSession: React.FC<InterviewSessionProps> = ({ questions, onFinish
       interval = setInterval(() => {
         setTimer((prev) => prev - 1);
       }, 1000);
+      console.log("Timer tick:", timer);
     } else if (timer === 0 && isTimerActive) {
+      console.log("Timer reached zero");
       // Time's up - mark question as skipped if not recording
       if (!isRecording) {
+        console.log("Not recording, skipping question");
         handleSkipQuestion();
       }
     }
@@ -83,6 +90,7 @@ const InterviewSession: React.FC<InterviewSessionProps> = ({ questions, onFinish
   }, [isRecording, recordingStartTime]);
 
   const handleNextQuestion = () => {
+    console.log("Next question button clicked");
     if (isLastQuestion) {
       handleFinishInterview();
     } else {
@@ -91,12 +99,14 @@ const InterviewSession: React.FC<InterviewSessionProps> = ({ questions, onFinish
   };
 
   const handlePreviousQuestion = () => {
+    console.log("Previous question button clicked");
     if (currentQuestionIndex > 0) {
       setCurrentQuestionIndex(currentQuestionIndex - 1);
     }
   };
 
   const handleFinishInterview = () => {
+    console.log("Finishing interview");
     setIsLoading(true);
     
     // Update the interview session as completed
@@ -129,12 +139,14 @@ const InterviewSession: React.FC<InterviewSessionProps> = ({ questions, onFinish
   };
 
   const handleStartRecording = () => {
+    console.log("Start recording button clicked");
     setIsTimerActive(false);
     setIsRecording(true);
     setRecordingStartTime(Date.now());
   };
 
   const handleStopRecording = async (data: Blob) => {
+    console.log("Stop recording called with data:", data ? "Blob received" : "No data");
     setIsRecording(false);
     
     if (!user || !sessionId) {
@@ -154,6 +166,7 @@ const InterviewSession: React.FC<InterviewSessionProps> = ({ questions, onFinish
       const timestamp = new Date().getTime();
       const filePath = `${user.id}/${sessionId}/${currentQuestion.id}_${timestamp}.webm`;
       
+      console.log("Uploading recording to path:", filePath);
       // Upload recording to Supabase Storage
       const { data: uploadData, error: uploadError } = await supabase.storage
         .from('interview_recordings')
@@ -162,8 +175,11 @@ const InterviewSession: React.FC<InterviewSessionProps> = ({ questions, onFinish
         });
         
       if (uploadError) {
+        console.error("Upload error:", uploadError);
         throw uploadError;
       }
+      
+      console.log("Upload successful:", uploadData);
       
       // Store response metadata in database
       const { error: insertError } = await supabase
@@ -179,8 +195,11 @@ const InterviewSession: React.FC<InterviewSessionProps> = ({ questions, onFinish
         });
         
       if (insertError) {
+        console.error("Insert error:", insertError);
         throw insertError;
       }
+      
+      console.log("Response metadata saved successfully");
       
       toast({
         title: "Response recorded",
@@ -207,6 +226,7 @@ const InterviewSession: React.FC<InterviewSessionProps> = ({ questions, onFinish
   };
 
   const handleSkipQuestion = async () => {
+    console.log("Skipping question");
     // Mark the question as skipped in the database
     if (user && sessionId) {
       try {
@@ -221,6 +241,7 @@ const InterviewSession: React.FC<InterviewSessionProps> = ({ questions, onFinish
           });
           
         if (error) {
+          console.error("Error marking question as skipped:", error);
           throw error;
         }
         
