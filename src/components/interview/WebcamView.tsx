@@ -1,6 +1,5 @@
-
 import React, { useRef, useEffect, useState } from 'react';
-import { Button } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { Mic, MicOff, Video, VideoOff } from "lucide-react";
 
 interface WebcamViewProps {
