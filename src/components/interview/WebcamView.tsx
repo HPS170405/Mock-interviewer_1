@@ -5,58 +5,44 @@ import { Mic, MicOff, Video, VideoOff } from "lucide-react";
 
 interface WebcamViewProps {
   onRecordingData?: (data: Blob) => void;
-  isRecording?: boolean;
 }
 
-const WebcamView: React.FC<WebcamViewProps> = ({ onRecordingData, isRecording = false }) => {
-  console.log("WebcamView rendering, isRecording:", isRecording);
+const WebcamView: React.FC<WebcamViewProps> = ({ onRecordingData }) => {
   const videoRef = useRef<HTMLVideoElement>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
+  const [isRecording, setIsRecording] = useState(false);
   const [audioEnabled, setAudioEnabled] = useState(true);
   const [videoEnabled, setVideoEnabled] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [recordedChunks, setRecordedChunks] = useState<Blob[]>([]);
 
   useEffect(() => {
     // Request access to webcam when component mounts
-    console.log("WebcamView mounted, requesting camera access");
     startCamera();
     
     // Clean up when component unmounts
     return () => {
-      console.log("WebcamView unmounting, cleaning up");
       if (streamRef.current) {
         streamRef.current.getTracks().forEach(track => track.stop());
       }
-      stopRecording();
     };
   }, []);
 
-  useEffect(() => {
-    // Handle recording state changes
-    console.log("Recording state changed:", isRecording);
-    if (isRecording) {
-      startRecording();
-    } else if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
-      stopRecording();
-    }
-  }, [isRecording]);
-
   const startCamera = async () => {
     try {
-      console.log("Requesting camera and microphone access");
       const stream = await navigator.mediaDevices.getUserMedia({ 
         video: true, 
         audio: true 
       });
       
-      console.log("Camera access granted");
       streamRef.current = stream;
       if (videoRef.current) {
         videoRef.current.srcObject = stream;
       }
       setError(null);
+      
+      // Start recording automatically
+      startRecording();
     } catch (err) {
       console.error("Error accessing camera:", err);
       setError("Could not access camera and microphone. Please check permissions.");
@@ -64,56 +50,28 @@ const WebcamView: React.FC<WebcamViewProps> = ({ onRecordingData, isRecording = 
   };
 
   const startRecording = () => {
-    if (!streamRef.current) {
-      console.error("No media stream available for recording");
-      return;
-    }
-    
-    setRecordedChunks([]);
-    
-    try {
-      console.log("Starting media recorder");
-      const mediaRecorder = new MediaRecorder(streamRef.current, {
-        mimeType: 'video/webm',
-      });
-      mediaRecorderRef.current = mediaRecorder;
-      
-      mediaRecorder.ondataavailable = (event) => {
-        console.log("Data available from media recorder", event.data?.size || 0, "bytes");
-        if (event.data && event.data.size > 0) {
-          setRecordedChunks(prev => [...prev, event.data]);
-        }
-      };
+    if (!streamRef.current) return;
 
-      mediaRecorder.start(100); // Collect data in 100ms chunks
-      console.log("Recording started");
-    } catch (err) {
-      console.error("Error starting recording:", err);
-      setError("Could not start recording. Please try again.");
-    }
-  };
+    const mediaRecorder = new MediaRecorder(streamRef.current);
+    mediaRecorderRef.current = mediaRecorder;
+    
+    const recordedChunks: Blob[] = [];
+    
+    mediaRecorder.ondataavailable = (event) => {
+      if (event.data.size > 0) {
+        recordedChunks.push(event.data);
+      }
+    };
 
-  const stopRecording = () => {
-    console.log("Stopping recording, media recorder state:", mediaRecorderRef.current?.state);
-    if (mediaRecorderRef.current && mediaRecorderRef.current.state !== 'inactive') {
-      mediaRecorderRef.current.stop();
-      console.log("Recording stopped");
-      
-      // Process the recorded chunks after a short delay to ensure all data is collected
-      setTimeout(() => {
-        if (recordedChunks.length > 0) {
-          console.log("Processing", recordedChunks.length, "recorded chunks");
-          const recordedBlob = new Blob(recordedChunks, { type: 'video/webm' });
-          console.log("Created blob of size:", recordedBlob.size, "bytes");
-          if (onRecordingData) {
-            onRecordingData(recordedBlob);
-          }
-          setRecordedChunks([]);
-        } else {
-          console.log("No recorded chunks to process");
-        }
-      }, 200);
-    }
+    mediaRecorder.onstop = () => {
+      const recordedBlob = new Blob(recordedChunks, { type: 'video/webm' });
+      if (onRecordingData) {
+        onRecordingData(recordedBlob);
+      }
+    };
+
+    mediaRecorder.start();
+    setIsRecording(true);
   };
 
   const toggleAudio = () => {
@@ -123,7 +81,6 @@ const WebcamView: React.FC<WebcamViewProps> = ({ onRecordingData, isRecording = 
         track.enabled = !audioEnabled;
       });
       setAudioEnabled(!audioEnabled);
-      console.log("Audio toggled to:", !audioEnabled);
     }
   };
 
@@ -134,7 +91,6 @@ const WebcamView: React.FC<WebcamViewProps> = ({ onRecordingData, isRecording = 
         track.enabled = !videoEnabled;
       });
       setVideoEnabled(!videoEnabled);
-      console.log("Video toggled to:", !videoEnabled);
     }
   };
 

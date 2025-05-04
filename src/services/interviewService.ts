@@ -1,7 +1,4 @@
 
-// Import any required dependencies here
-console.log("Loading interviewService.ts");
-
 interface InterviewFormData {
   name: string;
   domain: string;
@@ -12,86 +9,65 @@ interface InterviewFormData {
 interface Question {
   id: number;
   text: string;
-  type: string;
+  type: string; // technical or behavioral
 }
 
-/**
- * Generate interview questions based on form data
- */
-export const generateInterviewQuestions = async (formData: InterviewFormData): Promise<Question[]> => {
-  console.log("Generating interview questions for:", formData);
-  
-  // This is a mock implementation - in a real app, this would call an API
-  // But for now we'll generate some sample questions
-  
-  const technicalQuestions: Question[] = [
-    {
-      id: 1,
-      text: `Tell me about your experience with ${formData.domain} technologies.`,
-      type: "Technical"
-    },
-    {
-      id: 2,
-      text: `What's your approach to debugging issues in ${formData.domain}?`,
-      type: "Technical"
-    },
-    {
-      id: 3,
-      text: `Explain how you would architect a system for ${formData.domain}.`,
-      type: "Technical"
-    },
-    {
-      id: 4,
-      text: `What are the latest trends in ${formData.domain} that you're excited about?`,
-      type: "Technical"
-    }
-  ];
-  
-  const behavioralQuestions: Question[] = [
-    {
-      id: 5,
-      text: "Tell me about a time you had to deal with a difficult teammate.",
-      type: "Behavioral"
-    },
-    {
-      id: 6,
-      text: "Describe a situation where you had to meet a tight deadline.",
-      type: "Behavioral"
-    },
-    {
-      id: 7,
-      text: "How do you prioritize tasks when you have multiple competing priorities?",
-      type: "Behavioral"
-    },
-    {
-      id: 8,
-      text: "Tell me about a time you received difficult feedback and how you responded.",
-      type: "Behavioral"
-    }
-  ];
-  
-  let questions: Question[] = [];
-  
-  // Select questions based on interview types
-  if (formData.interviewTypes.includes("technical")) {
-    questions = [...questions, ...technicalQuestions];
-  }
-  
-  if (formData.interviewTypes.includes("behavioral")) {
-    questions = [...questions, ...behavioralQuestions];
-  }
-  
-  // If no specific types are selected, include all questions
-  if (formData.interviewTypes.length === 0) {
-    questions = [...technicalQuestions, ...behavioralQuestions];
-  }
-  
-  console.log(`Generated ${questions.length} questions:`, questions);
-  
-  // Simulate API delay
-  await new Promise(resolve => setTimeout(resolve, 500));
-  
-  return questions;
-};
+const API_KEY = "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";
+const API_URL = "https://api.groq.com/openai/v1/chat/completions";
 
-export default generateInterviewQuestions;
+export async function generateInterviewQuestions(formData: InterviewFormData): Promise<Question[]> {
+  try {
+    const interviewTypeText = formData.interviewTypes.join(" and ");
+    const prompt = `Generate 5 realistic ${interviewTypeText} interview questions for a ${formData.experience} level ${formData.domain} position. Format as a JSON array with questions having 'id', 'text', and 'type' fields. Make the questions challenging but appropriate for the experience level.`;
+    
+    const response = await fetch(API_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${API_KEY}`
+      },
+      body: JSON.stringify({
+        model: "llama3-70b-8192",
+        messages: [
+          {
+            role: "system",
+            content: "You are an AI interviewer specialized in creating realistic interview questions."
+          },
+          {
+            role: "user",
+            content: prompt
+          }
+        ],
+        temperature: 0.7,
+        max_tokens: 1024
+      })
+    });
+
+    if (!response.ok) {
+      throw new Error(`API request failed with status: ${response.status}`);
+    }
+
+    const data = await response.json();
+    console.log("API response:", data);
+    
+    if (data.choices && data.choices[0] && data.choices[0].message) {
+      try {
+        const content = data.choices[0].message.content;
+        // Extract JSON from the response - it might be wrapped in markdown code blocks
+        const jsonMatch = content.match(/```json([\s\S]*?)```/) || content.match(/```([\s\S]*?)```/) || [null, content];
+        const jsonString = jsonMatch[1] ? jsonMatch[1].trim() : content;
+        const questions = JSON.parse(jsonString);
+        
+        return Array.isArray(questions) ? questions : [];
+      } catch (parseError) {
+        console.error("Failed to parse LLM response:", parseError);
+        return [];
+      }
+    }
+    
+    return [];
+  } catch (error) {
+    console.error("Error generating interview questions:", error);
+    throw error;
+  }
+}
