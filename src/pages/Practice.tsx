@@ -9,6 +9,8 @@ import { InterviewForm } from "@/components/interview/InterviewForm";
 import InterviewSession from "@/components/interview/InterviewSession";
 import { generateInterviewQuestions } from "@/services/interviewService";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 
 interface Question {
   id: number;
@@ -28,21 +30,54 @@ const Practice = () => {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState<FormData | null>(null);
+  const [sessionId, setSessionId] = useState<string | null>(null);
   const { toast } = useToast();
+  const { user } = useAuth();
   
   const handleFormSubmit = async (values: FormData) => {
+    if (!user) {
+      toast({
+        title: "Authentication required",
+        description: "Please sign in to start an interview session.",
+        variant: "destructive",
+      });
+      return;
+    }
+    
     setFormData(values);
     setIsLoading(true);
     
     try {
+      // Create a new interview session in the database
+      const { data: sessionData, error: sessionError } = await supabase
+        .from('interview_sessions')
+        .insert({
+          user_id: user.id,
+          domain: values.domain,
+          experience_level: values.experience,
+          interview_types: values.interviewTypes,
+        })
+        .select()
+        .single();
+        
+      if (sessionError) {
+        throw sessionError;
+      }
+      
+      // Store the session ID for later use
+      if (sessionData) {
+        setSessionId(sessionData.id);
+      }
+      
+      // Generate interview questions
       const generatedQuestions = await generateInterviewQuestions(values);
       setQuestions(generatedQuestions);
       setActiveTab("practice");
     } catch (error) {
-      console.error("Error generating interview questions:", error);
+      console.error("Error setting up interview:", error);
       toast({
         title: "Error",
-        description: "Failed to generate interview questions. Please try again.",
+        description: "Failed to set up the interview session. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -58,6 +93,7 @@ const Practice = () => {
     setActiveTab("setup");
     setQuestions([]);
     setFormData(null);
+    setSessionId(null);
   };
   
   return (
@@ -93,6 +129,7 @@ const Practice = () => {
                         <InterviewSession
                           questions={questions}
                           onFinish={handleFinishInterview}
+                          sessionId={sessionId || undefined}
                         />
                       )}
                     </TabsContent>
@@ -144,7 +181,7 @@ const Practice = () => {
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                       </div>
-                      <p className="text-sm text-gray-600">Position your camera at eye level for better visual analysis.</p>
+                      <p className="text-sm text-gray-600">You have 30 seconds to start answering each question.</p>
                     </li>
                     <li className="flex gap-3">
                       <div className="flex-none text-interviewer-green">
@@ -152,7 +189,7 @@ const Practice = () => {
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                       </div>
-                      <p className="text-sm text-gray-600">Speak clearly and at a moderate pace for optimal voice analysis.</p>
+                      <p className="text-sm text-gray-600">Take your time with responses - there's no time limit once recording starts.</p>
                     </li>
                     <li className="flex gap-3">
                       <div className="flex-none text-interviewer-green">
@@ -160,7 +197,7 @@ const Practice = () => {
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                       </div>
-                      <p className="text-sm text-gray-600">Dress professionally to help you get in the right mindset.</p>
+                      <p className="text-sm text-gray-600">Position your camera at eye level for better visual presence.</p>
                     </li>
                     <li className="flex gap-3">
                       <div className="flex-none text-interviewer-green">
@@ -168,7 +205,7 @@ const Practice = () => {
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                       </div>
-                      <p className="text-sm text-gray-600">Take time to review your feedback between practice sessions.</p>
+                      <p className="text-sm text-gray-600">Your responses are saved automatically for later review.</p>
                     </li>
                   </ul>
                   
@@ -177,8 +214,9 @@ const Practice = () => {
                     <div className="space-y-2 text-sm text-gray-600">
                       <p>1. Fill out the interview setup form</p>
                       <p>2. Grant camera and microphone access</p>
-                      <p>3. Answer interview questions</p>
-                      <p>4. Review your performance</p>
+                      <p>3. Click "Start Recording" within 30 seconds of seeing each question</p>
+                      <p>4. Answer the question naturally and click "Stop" when finished</p>
+                      <p>5. Review your performance summary</p>
                     </div>
                   </div>
                 </CardContent>

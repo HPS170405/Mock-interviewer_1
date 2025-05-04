@@ -9,7 +9,75 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
-      [_ in never]: never
+      interview_responses: {
+        Row: {
+          created_at: string | null
+          duration_seconds: number | null
+          id: string
+          interview_session_id: string | null
+          question_id: number
+          question_text: string
+          recording_path: string | null
+          skipped: boolean | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          duration_seconds?: number | null
+          id?: string
+          interview_session_id?: string | null
+          question_id: number
+          question_text: string
+          recording_path?: string | null
+          skipped?: boolean | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          duration_seconds?: number | null
+          id?: string
+          interview_session_id?: string | null
+          question_id?: number
+          question_text?: string
+          recording_path?: string | null
+          skipped?: boolean | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      interview_sessions: {
+        Row: {
+          completed: boolean | null
+          created_at: string | null
+          domain: string
+          experience_level: string
+          id: string
+          interview_types: string[]
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          completed?: boolean | null
+          created_at?: string | null
+          domain: string
+          experience_level: string
+          id?: string
+          interview_types: string[]
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          completed?: boolean | null
+          created_at?: string | null
+          domain?: string
+          experience_level?: string
+          id?: string
+          interview_types?: string[]
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
