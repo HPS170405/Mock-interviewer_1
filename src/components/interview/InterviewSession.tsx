@@ -292,7 +292,6 @@ const InterviewSession: React.FC<InterviewSessionProps> = ({ questions, onFinish
               {!isRecording && (
                 <Button 
                   onClick={handleStartRecording}
-                  disabled={timer === 0}
                   className="bg-green-500 hover:bg-green-600"
                 >
                   Start Recording
