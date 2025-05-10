@@ -112,7 +112,7 @@ const ProgressPage = () => {
                     <span>Problem Solving</span>
                     <span className="font-medium">0%</span>
                   </div>
-                  <Progress value={0} className="h-2" />
+                  <Progress value={0} className="h-2 bg-muted" />
                   <p className="text-xs text-muted-foreground italic">Complete problem-solving questions to see progress</p>
                 </div>
                 <div className="space-y-2">
@@ -120,7 +120,7 @@ const ProgressPage = () => {
                     <span>System Design</span>
                     <span className="font-medium">0%</span>
                   </div>
-                  <Progress value={0} className="h-2" />
+                  <Progress value={0} className="h-2 bg-muted" />
                   <p className="text-xs text-muted-foreground italic">Complete system design questions to see progress</p>
                 </div>
                 <div className="space-y-2">
@@ -128,7 +128,7 @@ const ProgressPage = () => {
                     <span>Data Structures</span>
                     <span className="font-medium">0%</span>
                   </div>
-                  <Progress value={0} className="h-2" />
+                  <Progress value={0} className="h-2 bg-muted" />
                   <p className="text-xs text-muted-foreground italic">Complete data structure questions to see progress</p>
                 </div>
               </CardContent>
@@ -144,7 +144,7 @@ const ProgressPage = () => {
                     <span>Communication</span>
                     <span className="font-medium">0%</span>
                   </div>
-                  <Progress value={0} className="h-2" />
+                  <Progress value={0} className="h-2 bg-muted" />
                   <p className="text-xs text-muted-foreground italic">Complete behavioral questions to see progress</p>
                 </div>
                 <div className="space-y-2">
@@ -152,7 +152,7 @@ const ProgressPage = () => {
                     <span>Problem Analysis</span>
                     <span className="font-medium">0%</span>
                   </div>
-                  <Progress value={0} className="h-2" />
+                  <Progress value={0} className="h-2 bg-muted" />
                   <p className="text-xs text-muted-foreground italic">Complete analysis questions to see progress</p>
                 </div>
                 <div className="space-y-2">
@@ -160,7 +160,7 @@ const ProgressPage = () => {
                     <span>Time Management</span>
                     <span className="font-medium">0%</span>
                   </div>
-                  <Progress value={0} className="h-2" />
+                  <Progress value={0} className="h-2 bg-muted" />
                   <p className="text-xs text-muted-foreground italic">Complete timed questions to see progress</p>
                 </div>
               </CardContent>
